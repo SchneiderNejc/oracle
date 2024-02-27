@@ -11,6 +11,8 @@ contract EthPriceOracle is Ownable {
     uint private modulus = 1000;
     mapping (uint => bool) pendingRequests;
 
+    event GetLatestEthPrice(address callerAddress, uint id);
+    event SetLatestEthPrice(uint ethPrice, address caller);
 
     function getLatestEthPrice () external returns(uint) {
         /// @dev Deterministic and unsafe. 
@@ -19,6 +21,8 @@ contract EthPriceOracle is Ownable {
         randNonce++;
 
         pendingRequests[id] = true;
+
+        emit GetLatestEthPrice(msg.sender, id);
 
         return id;
     }
@@ -29,5 +33,7 @@ contract EthPriceOracle is Ownable {
 
         iOracle = IOracle(_callerAddress);
         iOracle.callback(_ethPrice, _id);
+
+        emit SetLatestEthPrice(_ethPrice, _callerAddress);
     }
 }
