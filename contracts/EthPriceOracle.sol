@@ -5,4 +5,21 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./IOracle.sol";
 
 contract EthPriceOracle is Ownable {
+    IOracle iOracle;
+
+    uint private randNonce = 0;
+    uint private modulus = 1000;
+    mapping (uint => bool) pendingRequests;
+
+
+    function getLatestEthPrice () external returns(uint) {
+        /// @dev Deterministic and unsafe. 
+        uint id = uint(keccak256(abi
+            .encodePacked(block.timestamp, msg.sender, randNonce))) % modulus;
+        randNonce++;
+
+        pendingRequests[id] = true;
+
+        return id;
+    }
 }
