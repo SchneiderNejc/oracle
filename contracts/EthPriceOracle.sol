@@ -22,4 +22,12 @@ contract EthPriceOracle is Ownable {
 
         return id;
     }
+
+    function setLatestEthPrice(uint _ethPrice, address _callerAddress, uint _id) external onlyOwner {
+        require(pendingRequests[_id], "Request not on pending list");
+        delete pendingRequests[_id];
+
+        iOracle = IOracle(_callerAddress);
+        iOracle.callback(_ethPrice, _id);
+    }
 }
